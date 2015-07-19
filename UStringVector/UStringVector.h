@@ -9,7 +9,7 @@
 #include <tgmath.h>
 #endif
 
-#define TYPE_COUNT 4    // The number of predefine classes of text, the last one should be "others"
+#define TYPE_COUNT 3    // The number of predefine classes of text
 #define BUF_SIZE 10000
 #define BASE_HASH_LEN 65535
 #define MAX_UNICODE 130000  // Should be bigger than the biggest unicode code
@@ -118,15 +118,6 @@ int init_uspl(struct ustring_parse_list ** pp_uspl);
 int clear_uspl(struct ustring_parse_list ** pp_uspl);
 
 void output_hash_vector(FILE * out, const struct hash_vector * p_hv);
-
-// The trainer which simply add the vector when the class meets and sub the vector when not
-int naive_trainer(struct hash_vector * ap_hv[TYPE_COUNT + 1], const struct text_list * p_tl, Parser parser, Checker checker);
-
-// The tester using K-Nearest Neighbors algorithm
-int KNN_tester(FILE * out, struct text_list * p_tl, struct hash_vector * const statistic[TYPE_COUNT + 1], Parser parser, Checker checker);
-
-// The classifier using K-Nearest Neighbors algorithm
-int KNN_classifier(FILE * out, struct text_list * p_tl, struct hash_vector * const statistic[TYPE_COUNT + 1], Parser parser, Checker checker);
 
 int save_vector(FILE * output, const struct hash_vector * p_hv);
 int save_vectors(FILE * output, struct hash_vector * const ap_hv[TYPE_COUNT + 1]);
