@@ -9,7 +9,6 @@
 #include <tgmath.h>
 #endif
 
-#define TYPE_COUNT 3    // The number of predefine classes of text
 #define BUF_SIZE 10000
 #define BASE_HASH_LEN 65535
 #define MAX_UNICODE 130000  // Should be bigger than the biggest unicode code
@@ -25,18 +24,6 @@ typedef int(*Parser)(struct ustring_parse_list * p, const struct ustring * cp_us
 
 typedef long double Lf;
 typedef int type_t; // This type is supposed to be big enough to store TYPE_COUNT
-
-// The struct of a text.
-struct text {
-    struct ustring * us;
-    int8_t types[TYPE_COUNT];
-};
-
-// The struct of a list of text
-struct text_list {
-    struct text * list;
-    llu len;
-};
 
 struct uchar_analysis {
     llu total_count;
@@ -66,16 +53,6 @@ struct ustring_parse_list {
     llu * end;  // The array of ending indexes
     llu len;    // The length of both start and end
 };
-
-int init_text(struct text ** pp_text, struct ustring * us, int8_t types[TYPE_COUNT]);
-int clear_text(struct text ** pp_text);
-
-int init_text_list(struct text_list ** pp_tlist, const struct text a_text[], llu len);
-int resize_text_list(struct text_list * p_tlist, llu len);
-int clear_text_list(struct text_list ** pp_tlist);
-
-int get_char_analysis(const struct text_list * cp_tlist, struct uchar_analysis * uca);
-int output_char_analysis(FILE * out, const struct uchar_analysis * uca);
 
 int init_hash_vector(struct hash_vector ** pp_hv);
 int rehash_hash_vector(struct hash_vector * p_hv, llu hashlen);
@@ -120,8 +97,6 @@ int clear_uspl(struct ustring_parse_list ** pp_uspl);
 void output_hash_vector(FILE * out, const struct hash_vector * p_hv);
 
 int save_vector(FILE * output, const struct hash_vector * p_hv);
-int save_vectors(FILE * output, struct hash_vector * const ap_hv[TYPE_COUNT + 1]);
 int load_vector(FILE * input, struct hash_vector * p_hv);
-int load_vectors(FILE * input, struct hash_vector * ap_hv[TYPE_COUNT + 1]);
 
 #endif
