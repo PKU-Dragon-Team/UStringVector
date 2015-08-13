@@ -72,7 +72,7 @@ int rehash_hash_vector(struct hash_vector * p_hv, llu hashlen) {
         return -1;
     }
 
-    struct ustring_analysis ** temp = calloc(hashlen, sizeof(struct ustring_analysis *));
+    struct ustring_analysis ** temp = calloc((size_t)hashlen, sizeof(struct ustring_analysis *));
     if (temp == NULL) {
         return -1;
     }
@@ -328,8 +328,8 @@ int commonParser(struct ustring_parse_list * p, const struct ustring * cp_us, co
         func = cf;
     }
 
-    p->start = calloc(cp_us->index_len + 1, sizeof(llu));
-    p->end = calloc(cp_us->index_len + 1, sizeof(llu));
+    p->start = calloc((size_t)(cp_us->index_len + 1), sizeof(llu));
+    p->end = calloc((size_t)(cp_us->index_len + 1), sizeof(llu));
     if (p->start == NULL || p->end == NULL) {
         return -1;
     }
@@ -352,14 +352,14 @@ int commonParser(struct ustring_parse_list * p, const struct ustring * cp_us, co
         }
     }
     {
-        llu * temp = realloc(p->start, j * sizeof(llu));
+        llu * temp = realloc(p->start, (size_t)(j * sizeof(llu)));
         if (temp == NULL) {
             return -1;
         }
         p->start = temp;
     }
     {
-        llu * temp = realloc(p->end, j * sizeof(llu));
+        llu * temp = realloc(p->end, (size_t)(j * sizeof(llu)));
         if (temp == NULL) {
             return -1;
         }
@@ -374,8 +374,8 @@ int ucharParser(struct ustring_parse_list * p, const struct ustring * cp_us, con
     if (p == NULL || cp_us == NULL || cf == NULL) {
         return -1;
     }
-    p->start = calloc(cp_us->index_len + 1, sizeof(llu));
-    p->end = calloc(cp_us->index_len + 1, sizeof(llu));
+    p->start = calloc((size_t)(cp_us->index_len + 1), sizeof(llu));
+    p->end = calloc((size_t)(cp_us->index_len + 1), sizeof(llu));
     if (p->start == NULL || p->end == NULL) {
         return -1;
     }
@@ -457,7 +457,7 @@ int save_vector(FILE * output, const struct hash_vector * p_hv) {
         while (p != NULL) {
             fwrite(&p->count, sizeof(lld), 1, output);
             fwrite(&p->us->string_len, sizeof(llu), 1, output);
-            fwrite(p->us->string, sizeof(uchar), p->us->string_len, output);
+            fwrite(p->us->string, sizeof(uchar), (size_t)(p->us->string_len), output);
             p = p->next;
         }
     }
@@ -479,7 +479,7 @@ int load_vector(FILE * input, struct hash_vector * p_hv) {
         return -1;
     }
 
-    p_hv->usa_list = calloc(p_hv->hashlen, sizeof(struct ustring_analysis *));
+    p_hv->usa_list = calloc((size_t)(p_hv->hashlen), sizeof(struct ustring_analysis *));
     if (p_hv->usa_list == NULL) {
         return -1;
     }
@@ -498,11 +498,11 @@ int load_vector(FILE * input, struct hash_vector * p_hv) {
 
         llu string_len;
         fread(&string_len, sizeof(llu), 1, input);
-        uchar *s = calloc(string_len + 1, sizeof(uchar));
+        uchar *s = calloc((size_t)(string_len + 1), sizeof(uchar));
         if (s == NULL) {
             return -1;
         }
-        fread(s, sizeof(uchar), string_len, input);
+        fread(s, sizeof(uchar), (size_t)string_len, input);
         s[string_len] = '\0';
         struct ustring *us = NULL;
         init_ustring(&us, index, s, string_len);
