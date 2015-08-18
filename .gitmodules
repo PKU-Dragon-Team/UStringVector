@@ -1,0 +1,3 @@
+[submodule "UStringVector/ucharLib"]
+	path = UStringVector/ucharLib
+	url = https://github.com/PKU-Dragon-Team/ucharLib.git
