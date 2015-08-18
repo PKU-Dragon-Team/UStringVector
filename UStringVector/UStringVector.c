@@ -27,6 +27,7 @@ static bool INSERT_USA_LIST(struct ustring_analysis * ap_usa[], struct ustring_a
                 }
                 else {
                     p->next = p_usa;
+
                     return true;
                 }
             }
@@ -44,6 +45,39 @@ static void FREE_IF_NOT_NULL(void * p) {
     if (p != NULL) {
         free(p);
     }
+}
+
+static int INSERT_HASH_VECTOR(struct hash_vector * p_hv, const struct ustring * us, lld count, struct ustring_analysis * next) {
+    if (p_hv == NULL) {
+        return -1;
+    }
+
+    struct ustring_analysis * p_ua = malloc(sizeof(struct ustring_analysis));
+    if (p_ua == NULL) {
+        return -1;
+    }
+    struct ustring * temp;
+    init_ustring(&temp, index, NULL, 0);
+    clone_ustring(temp, us);
+
+    p_ua->us = temp;
+    p_ua->count = count;
+    p_ua->next = next;
+
+    if (INSERT_USA_LIST(p_hv->usa_list, p_ua, hash_ustring(p_ua->us, HASH_SEED, p_hv->hashlen))) {
+        ++p_hv->count;
+    }
+    else {
+        clear_ustring(&temp);
+    }
+    p_hv->total_count += llabs(count);
+
+    // check if hash-map is overload
+    if (p_hv->count * 2 > p_hv->hashlen) {
+        rehash_hash_vector(p_hv, p_hv->hashlen * 2 + 1);
+    }
+
+    return 0;
 }
 
 int init_hash_vector(struct hash_vector ** pp_hv) {
@@ -89,6 +123,7 @@ int rehash_hash_vector(struct hash_vector * p_hv, llu hashlen) {
     free(p_hv->usa_list);
     p_hv->usa_list = temp;
     p_hv->hashlen = hashlen;
+
     return 0;
 }
 
@@ -106,41 +141,8 @@ int append_hash_vector(struct hash_vector * p_hv, const struct ustring * cp_us, 
         struct ustring * temp = malloc(sizeof(struct ustring));
         init_ustring(&temp, index, NULL, 0);
         slice_ustring(temp, cp_us, p_uspl->start[i], p_uspl->end[i]);
-        insert_hash_vector(p_hv, temp, 1, NULL);
+        INSERT_HASH_VECTOR(p_hv, temp, 1, NULL);
     }
-    return 0;
-}
-
-int insert_hash_vector(struct hash_vector * p_hv, const struct ustring * us, lld count, struct ustring_analysis * next) {
-    if (p_hv == NULL) {
-        return -1;
-    }
-
-    struct ustring_analysis * p_ua = malloc(sizeof(struct ustring_analysis));
-    if (p_ua == NULL) {
-        return -1;
-    }
-    struct ustring * temp;
-    init_ustring(&temp, index, NULL, 0);
-    clone_ustring(temp, us);
-
-    p_ua->us = temp;
-    p_ua->count = count;
-    p_ua->next = next;
-
-    if (INSERT_USA_LIST(p_hv->usa_list, p_ua, hash_ustring(p_ua->us, HASH_SEED, p_hv->hashlen))) {
-        ++p_hv->count;
-    }
-    else {
-        clear_ustring(&temp);
-    }
-    p_hv->total_count += llabs(count);
-
-    // check if hash-map is overload
-    if (p_hv->count * 2 > p_hv->hashlen) {
-        rehash_hash_vector(p_hv, p_hv->hashlen * 2 + 1);
-    }
-
     return 0;
 }
 
@@ -153,7 +155,7 @@ int add_hash_vector(struct hash_vector * p_hv1, const struct hash_vector * p_hv2
         struct ustring_analysis * p = p_hv2->usa_list[i];
 
         while (p != NULL) {
-            insert_hash_vector(p_hv1, p->us, p->count, NULL);
+            INSERT_HASH_VECTOR(p_hv1, p->us, p->count, NULL);
             p = p->next;
         }
     }
@@ -171,7 +173,7 @@ int sub_hash_vector(struct hash_vector * p_hv1, const struct hash_vector * p_hv2
         struct ustring_analysis * p = p_hv2->usa_list[i];
 
         while (p != NULL) {
-            insert_hash_vector(p_hv1, p->us, -p->count, NULL);
+            INSERT_HASH_VECTOR(p_hv1, p->us, -p->count, NULL);
             p = p->next;
         }
     }
@@ -238,6 +240,7 @@ int recount_hash_vector(struct hash_vector * p_hv) {
 
     p_hv->total_count = total_count;
     p_hv->count = count;
+
     return 0;
 }
 
@@ -312,6 +315,7 @@ int clear_hash_vector(struct hash_vector ** pp_hv) {
     free((*pp_hv)->usa_list);
     free(*pp_hv);
     *pp_hv = NULL;
+
     return 0;
 }
 
@@ -389,6 +393,7 @@ int ucharParser(struct ustring_parse_list * p, const struct ustring * cp_us, con
         ++j;
     }
     p->len = j;
+
     return 0;
 }
 
@@ -403,6 +408,7 @@ int init_uspl(struct ustring_parse_list ** pp_uspl) {
     (*pp_uspl)->len = 0;
     (*pp_uspl)->start = NULL;
     (*pp_uspl)->end = NULL;
+
     return 0;
 }
 
