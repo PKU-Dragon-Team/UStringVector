@@ -40,7 +40,11 @@ static bool IS_BLANK(const uchar uc[]) {
     return *uc == '\n' || *uc == '\r' || *uc == '\t' || *uc == ' ';
 }
 
-#define FREE_IF_NOT_NULL(p) if (p != NULL) free(p);
+static void FREE_IF_NOT_NULL(void * p) {
+    if (p != NULL) {
+        free(p);
+    }
+}
 
 int init_hash_vector(struct hash_vector ** pp_hv) {
     if (pp_hv == NULL) {
