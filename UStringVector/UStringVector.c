@@ -1,6 +1,6 @@
 #include "UStringVector.h"
 
-static bool insert_usa_list(struct ustring_analysis * ap_usa[], struct ustring_analysis * p_usa, llu hashcode) {
+static bool INSERT_USA_LIST(struct ustring_analysis * ap_usa[], struct ustring_analysis * p_usa, llu hashcode) {
     if (ap_usa[hashcode] == NULL) {
         ap_usa[hashcode] = p_usa;
         return true;
@@ -36,15 +36,11 @@ static bool insert_usa_list(struct ustring_analysis * ap_usa[], struct ustring_a
     return true;
 }
 
-static bool is_blank(const uchar uc[]) {
+static bool IS_BLANK(const uchar uc[]) {
     return *uc == '\n' || *uc == '\r' || *uc == '\t' || *uc == ' ';
 }
 
-static void free_if_not_null(void * p) {
-    if (p != NULL) {
-        free(p);
-    }
-}
+#define FREE_IF_NOT_NULL(p) if (p != NULL) free(p);
 
 int init_hash_vector(struct hash_vector ** pp_hv) {
     if (pp_hv == NULL) {
@@ -80,7 +76,7 @@ int rehash_hash_vector(struct hash_vector * p_hv, llu hashlen) {
     for (llu i = 0; i < p_hv->hashlen; ++i) {
         struct ustring_analysis * p = p_hv->usa_list[i];
         while (p != NULL) {
-            insert_usa_list(temp, p, hash_ustring(p->us, HASH_SEED, hashlen));
+            INSERT_USA_LIST(temp, p, hash_ustring(p->us, HASH_SEED, hashlen));
             struct ustring_analysis * q = p->next;
             p->next = NULL;
             p = q;
@@ -128,7 +124,7 @@ int insert_hash_vector(struct hash_vector * p_hv, const struct ustring * us, lld
     p_ua->count = count;
     p_ua->next = next;
 
-    if (insert_usa_list(p_hv->usa_list, p_ua, hash_ustring(p_ua->us, HASH_SEED, p_hv->hashlen))) {
+    if (INSERT_USA_LIST(p_hv->usa_list, p_ua, hash_ustring(p_ua->us, HASH_SEED, p_hv->hashlen))) {
         ++p_hv->count;
     }
     else {
@@ -322,7 +318,7 @@ int commonParser(struct ustring_parse_list * p, const struct ustring * cp_us, co
     }
     Checker func;
     if (cf == NULL) {
-        func = is_blank;
+        func = IS_BLANK;
     }
     else {
         func = cf;
@@ -412,8 +408,8 @@ int clear_uspl(struct ustring_parse_list ** pp_uspl) {
         return -1;
     }
     if (*pp_uspl != NULL) {
-        free_if_not_null((*pp_uspl)->start);
-        free_if_not_null((*pp_uspl)->end);
+        FREE_IF_NOT_NULL((*pp_uspl)->start);
+        FREE_IF_NOT_NULL((*pp_uspl)->end);
         free(*pp_uspl);
         *pp_uspl = NULL;
     }
@@ -509,7 +505,7 @@ int load_vector(FILE * input, struct hash_vector * p_hv) {
         p->us = us;
         p->next = NULL;
 
-        insert_usa_list(p_hv->usa_list, p, hash_ustring(us, 0, p_hv->hashlen));
+        INSERT_USA_LIST(p_hv->usa_list, p, hash_ustring(us, 0, p_hv->hashlen));
     }
     return 0;
 }
