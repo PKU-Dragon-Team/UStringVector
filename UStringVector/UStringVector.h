@@ -14,23 +14,24 @@
 #define MAX_UNICODE 130000  // Should be bigger than the biggest unicode code
 #define HASH_SEED 0
 
-// The pointer of checker function
-typedef bool(*Checker)(const uchar uc[]);
+// ----- typedef -----
+typedef bool(*Checker)(const uchar uc[]);   // The pointer of checker function
 
 /* The pointer of Parser function
-A Parser should accept a ustring and parse it into ustring_parse_list
-*/
+A Parser should accept a ustring and parse it into ustring_parse_list */
 typedef int(*Parser)(struct ustring_parse_list * p, const struct ustring * cp_us, const Checker cf);
-
 typedef long double Lf;
 typedef int type_t; // This type is supposed to be big enough to store TYPE_COUNT
 
+// ----- struct -----
+/* List struct for analysing uchar */
 struct uchar_analysis {
     llu total_count;
     lld uchar_list[MAX_UNICODE];
 };
 
-// A link node of ustring_analysis
+/* A link node of ustring_analysis
+   向量的链结 */
 struct ustring_analysis {
     struct ustring * us;
     lld count;
@@ -38,13 +39,13 @@ struct ustring_analysis {
 };
 
 /* A hashmap to store ustring_analysis,
-which use link list to deal with collapse.
-*/
+   which use link list to deal with collapse.
+   存储 ustring_analysis 的散列表，使用链表来处理碰撞 */
 struct hash_vector {
     llu total_count;	// the number of words that counted
     struct ustring_analysis ** usa_list;
     llu hashlen;	// the length of hashmap
-    llu count;		// the number of non-NULL node in hashmap
+    llu count;		// the number of total node in hashmap
 };
 
 // The struct of a ustring_parse_list

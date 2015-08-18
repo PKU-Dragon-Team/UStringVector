@@ -227,10 +227,9 @@ int recount_hash_vector(struct hash_vector * p_hv) {
     llu total_count = 0;
     for (llu i = 0; i < p_hv->hashlen; ++i) {
         if (p_hv->usa_list[i] != NULL) {
-            ++count;
-
             struct ustring_analysis * p = p_hv->usa_list[i];
             while (p != NULL) {
+                ++count;
                 total_count += llabs(p->count);
                 p = p->next;
             }
@@ -440,16 +439,16 @@ int save_vector(FILE * output, const struct hash_vector * p_hv) {
     fwrite(&p_hv->hashlen, sizeof(llu), 1, output);
     fwrite(&p_hv->count, sizeof(llu), 1, output);
 
-    llu count = 0;
+    llu n = 0;
     // traverse the hashmap the first time
     for (llu i = 0; i < p_hv->hashlen; ++i) {
         struct ustring_analysis * p = p_hv->usa_list[i];
         while (p != NULL) {
-            ++count;
+            ++n;
             p = p->next;
         }
     }
-    fwrite(&count, sizeof(llu), 1, output);
+    fwrite(&n, sizeof(llu), 1, output);
 
     // traverse the hashmap the second time
     for (llu i = 0; i < p_hv->hashlen; ++i) {
@@ -484,12 +483,12 @@ int load_vector(FILE * input, struct hash_vector * p_hv) {
         return -1;
     }
 
-    llu count;
-    if (fread(&count, sizeof(llu), 1, input) == 0) {
+    llu n;
+    if (fread(&n, sizeof(llu), 1, input) == 0) {
         return -1;
     }
 
-    for (llu i = 0; i < count; ++i) {
+    for (llu i = 0; i < n; ++i) {
         struct ustring_analysis * p = malloc(sizeof(struct ustring_analysis));
         if (p == NULL) {
             return -1;
