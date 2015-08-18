@@ -10,7 +10,7 @@
 #endif
 
 #define BUF_SIZE 10000
-#define BASE_HASH_LEN 65535
+#define BASE_HASH_LEN 65536
 #define MAX_UNICODE 130000  // Should be bigger than the biggest unicode code
 #define HASH_SEED 0
 
