@@ -2,17 +2,18 @@
 #define USTRVECTOR
 
 #include "ucharLib.h"
-#include <ctype.h>
 #include <math.h>
 
 #ifndef NO_TGMATH   // The tgmath.h is replace by math.h in Visual Studio
 #include <tgmath.h>
 #endif
 
-#define BUF_SIZE 10000
-#define BASE_HASH_LEN 65536
+#define BASE_HASH_LEN 0x10000
 #define MAX_UNICODE 130000  // Should be bigger than the biggest unicode code
-#define HASH_SEED 0
+
+// ----- extern value -----
+/* */
+extern const llu HASH_SEED;
 
 // ----- typedef -----
 typedef bool(*Checker)(const uchar uc[]);   // The pointer of checker function
